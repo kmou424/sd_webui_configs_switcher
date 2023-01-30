@@ -2,6 +2,7 @@ import argparse
 import os
 import subprocess
 import os.path as path
+import sys
 
 CONFIGS_ROOT = "custom_configs"
 CONFIGS_FILES = [
@@ -67,8 +68,8 @@ def check_config_files_exist(config_name, assert_check=True):
     for config_file in CONFIGS_FILES:
         if assert_check:
             assert path.isfile(path.join(target_config_directory, config_file)) and \
-                   path.exists(path.join(target_config_directory, config_file)), \
-                   "required config file \"%s\" is not in \"%s\"" % (config_file, target_config_directory)
+                path.exists(path.join(target_config_directory, config_file)), \
+                "required config file \"%s\" is not in \"%s\"" % (config_file, target_config_directory)
         else:
             if not path.isfile(path.join(target_config_directory, config_file)) and \
                     path.exists(path.join(target_config_directory, config_file)):
@@ -82,7 +83,11 @@ def clean_and_create_link(config_name):
     for config_file in CONFIGS_FILES:
         if path.exists(config_file):
             if path.islink(config_file):
-                os.remove(config_file)
+                try:
+                    os.remove(config_file)
+                except OSError as err:
+                    sys.stderr.write("delete old link failed, caused by: " + err.strerror)
+                    continue
             else:
                 print("failed create link for \"%s\": target is not a symbolic link" % config_file)
                 continue
