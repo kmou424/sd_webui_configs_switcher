@@ -1,8 +1,8 @@
 {
     "__comment__": "this is a model for generate realistic photos(enhanced for asian face)",
     "txt2img/Prompt/visible": true,
-    "txt2img/Prompt/value/\u6ce8\u91ca": "(aegyo sal:1)(\u5367\u8695), professional lighting(\u589e\u52a0\u5149\u6cfd), photon mapping(\u589e\u52a0\u5149\u6cfd), radiosity(\u589e\u52a0\u5149\u6cfd), physically-based rendering(\u7269\u7406\u6e32\u67d3), (ulzzang-6500:1.0)(\u8138\u8d5e(\u97e9))",
-    "txt2img/Prompt/value": "(8k, RAW photo, best quality, masterpiece:1.2), (realistic, photo-realistic:1.37), 1girl, (ulzzang-6500:1.0), (Kpop idol), (aegyo sal:1), professional lighting, photon mapping, radiosity, physically-based rendering",
+    "txt2img/Prompt/value/\u6ce8\u91ca": "(aegyo sal:1)(\u5367\u8695), professional lighting(\u589e\u52a0\u5149\u6cfd), photon mapping(\u589e\u52a0\u5149\u6cfd), radiosity(\u589e\u52a0\u5149\u6cfd), physically-based rendering(\u7269\u7406\u6e32\u67d3)",
+    "txt2img/Prompt/value": "(8k, RAW photo, best quality, masterpiece:1.2), 1girl, (aegyo sal:1), professional lighting, photon mapping, radiosity, physically-based rendering",
     "txt2img/Negative prompt/visible": true,
     "txt2img/Negative prompt/value": "EasyNegative, paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, glans,extra fingers,fewer fingers",
     "txt2img/Styles/visible": true,
