@@ -1,13 +1,22 @@
 import argparse
 import os
+import platform
 import subprocess
 import os.path as path
 import sys
+from enum import unique, Enum
 
 CONFIGS_ROOT = "custom_configs"
 CONFIGS_FILES = [
     "config.json", "ui-config.json"
 ]
+
+
+@unique
+class OS(Enum):
+    Windows = 0
+    Linux = 1
+    Darwin = 2
 
 
 def parse_arg():
@@ -28,17 +37,45 @@ def parse_arg():
     return arg_parser.parse_args()
 
 
+def get_system():
+    system = platform.system()
+    if system == OS.Windows.name:
+        return OS.Windows
+    elif system == OS.Linux.name:
+        return OS.Linux
+    elif system == OS.Darwin.name:
+        return OS.Darwin
+    else:
+        return system
+
+
 def run_cmd(cmd: str):
     print("Execute command: %s" % cmd)
     subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
 
+def create_symbolic_link(src: str, dst: str):
+    system = get_system()
+    if system == OS.Linux or system == OS.Darwin:
+        run_cmd("ln -sT %s %s" % (dst, src))
+    elif system == OS.Windows:
+        run_cmd("mklink %s %s" % (dst, src))
+
+
 def root_check():
-    assert os.getuid() == 0 and os.getgid() == 0, "you must run this script with root permission"
+    system = get_system()
+
+    # Only check root permission when user using Linux or MacOS
+    if system == OS.Linux or system == OS.Darwin:
+        assert os.getuid() == 0 and os.getgid() == 0, "you must run this script with root permission"
 
 
 def env_check():
-    assert path.exists(CONFIGS_ROOT), "\"configs\" directory not found, we can't locate your configurations for " \
+    system = get_system()
+    # Raise error if there is a not supported OS
+    if isinstance(system, str):
+        raise OSError("Unexpected OS: %s" % system)
+    assert path.exists(CONFIGS_ROOT), "\"configs\" directory not found, we can't locate your configurations to " \
                                       "switch"
 
 
@@ -68,8 +105,8 @@ def check_config_files_exist(config_name, assert_check=True):
     for config_file in CONFIGS_FILES:
         if assert_check:
             assert path.isfile(path.join(target_config_directory, config_file)) and \
-                path.exists(path.join(target_config_directory, config_file)), \
-                "required config file \"%s\" is not in \"%s\"" % (config_file, target_config_directory)
+                   path.exists(path.join(target_config_directory, config_file)), \
+                   "required config file \"%s\" is not in \"%s\"" % (config_file, target_config_directory)
         else:
             if not path.isfile(path.join(target_config_directory, config_file)) and \
                     path.exists(path.join(target_config_directory, config_file)):
@@ -91,7 +128,7 @@ def clean_and_create_link(config_name):
             else:
                 print("failed create link for \"%s\": target is not a symbolic link" % config_file)
                 continue
-        run_cmd("ln -sT %s %s" % (path.join(target_config_directory, config_file), config_file))
+        create_symbolic_link(path.join(target_config_directory, config_file), config_file)
 
 
 def main():
